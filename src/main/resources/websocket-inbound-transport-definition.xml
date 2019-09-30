@@ -7,7 +7,23 @@
 		<propertyDefinition propertyName="URI"
 			label="${org.falpi.geoevent.transport.websocket-transport.TRANSPORT_IN_URI_LBL}"
 			description="${org.falpi.geoevent.transport.websocket-transport.TRANSPORT_IN_URI_DESC}"
-			propertyType="String" defaultValue="localhost" mandatory="false"
-			readOnly="false"/>		
-	</propertyDefinitions>
+			propertyType="String" defaultValue="localhost" 
+			mandatory="false" readOnly="false"/>		
+		<propertyDefinition propertyName="START_MSG"
+			label="Startup Message"
+			description="Startup Message"
+			propertyType="String" defaultValue=""
+			mandatory="false" readOnly="false"/>
+		<propertyDefinition propertyName="PROXY"
+			label="Use Proxy"
+			description="Use Proxy"
+			propertyType="Boolean" defaultValue="false" 
+			mandatory="true" readOnly="false"/>	
+		<propertyDefinition propertyName="PROXY_ADDR"
+			label="Proxy Address"
+			description="Proxy Address"
+			propertyType="String" defaultValue="http://localhost:3128" dependsOn="PROXY=true" 
+			mandatory="true" readOnly="false"/>	
+	
+   	</propertyDefinitions>
 </transport>

@@ -46,8 +46,11 @@ import com.esri.ges.transport.TransportDefinition;
 public class WebsocketInboundTransport extends InboundTransportBase
 {
 
-  private static final BundleLogger LOGGER                  = BundleLoggerFactory.getLogger(WebsocketInboundTransport.class);
-  private static final String       URI_PROPERTY_NAME       = "URI";
+  private static final BundleLogger LOGGER                    = BundleLoggerFactory.getLogger(WebsocketInboundTransport.class);
+  private static final String       URI_PROPERTY_NAME         = "URI";
+  private static final String       PROXY_PROPERTY_NAME       = "PROXY";
+  private static final String       PROXY_ADDR_PROPERTY_NAME  = "PROXY_ADDR";
+  private static final String       START_MSG_PROPERTY_NAME   = "START_MSG";
 
   private static final int          DEFAULT_UNSECURE_PORT   = 80;
   private static final int          DEFAULT_SECURE_PORT     = 443;
@@ -58,16 +61,21 @@ public class WebsocketInboundTransport extends InboundTransportBase
   public static final int           MAX_TEXT_MESSAGE_SIZE   = 10 * 1024;
   public static final int           MAX_BINARY_MESSAGE_SIZE = 64 * 1024;
 
-  public URI                        uri;
-  private WebsocketInboundSocket    socket;
-  private ByteBuffer                buffer                  = ByteBuffer.allocate(1024);
+  public  URI                       uri;
+  public  boolean                   proxy;
+  public  String                    proxyAddr;
+  public  String                    startMessage;
+  
   private Charset                   charset;
-
+  private ByteBuffer                buffer                  = ByteBuffer.allocate(1024);
+  private WebsocketInboundSocket    socket;
+  
   // Constructor
   public WebsocketInboundTransport(TransportDefinition definition) throws ComponentException  {
     
 	  super(definition);
       charset = StandardCharsets.UTF_8;
+      
   }
   
   @Override
@@ -78,10 +86,10 @@ public class WebsocketInboundTransport extends InboundTransportBase
   public void start() throws RunningException {
     
 	  switch (getRunningState()) {
-      case STARTING:
-      case STARTED:
-        return;
-      default:
+         case STARTING:
+         case STARTED:
+            return;
+         default:
     }
 
     setRunningState(RunningState.STARTING);
@@ -115,8 +123,19 @@ public class WebsocketInboundTransport extends InboundTransportBase
   private synchronized void setup() {
     try
     {
-      Property prop = getProperty(URI_PROPERTY_NAME);
-      uri = getURI(prop.getValueAsString());
+      
+      Property uriProp = getProperty(URI_PROPERTY_NAME);
+      uri = getURI(uriProp.getValueAsString());
+      
+      Property proxyProp = getProperty(PROXY_PROPERTY_NAME);
+      proxy = (proxyProp.getValueAsString()=="true");
+      
+      Property proxyAddrProp = getProperty(PROXY_ADDR_PROPERTY_NAME);
+      proxyAddr = proxyAddrProp.getValueAsString(); 
+      
+      Property startMsgProp = getProperty(START_MSG_PROPERTY_NAME);
+      startMessage = startMsgProp.getValueAsString(); 
+      
       socket = connect();
       setRunningState(RunningState.STARTED);
     }

@@ -46,8 +46,10 @@ public class WebsocketInboundSocket extends WebSocketAdapter
 	  this.session = false; 
 	  this.transport = transport;		
 	  
-	  this.factory = new WebSocketFactory();	  
-	  factory.getProxySettings().setServer("http://10.145.197.23:3128");
+	  this.factory = new WebSocketFactory();
+	  
+	  if (transport.proxy)
+	  factory.getProxySettings().setServer(transport.proxyAddr);
 	  
 	  this.socket = factory.createSocket(transport.uri).addListener(this).connect();
   }
@@ -68,8 +70,10 @@ public class WebsocketInboundSocket extends WebSocketAdapter
   @Override
   public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
 	  
-	  session = true;	  
-	  socket.sendText("{\"v\":22,\"i\":{},\"s\":false,\"x\":0,\"w\":0,\"tx\":0,\"tw\":1,\"a\":6,\"z\":2,\"b\":true,\"h\":\"#m=oss;t=3;s=0;o=0;b=0.00;y=37.9962;x=23.9063;z=2;d=2;dl=2;dc=0;\",\"l\":1,\"t\":1,\"from_lightningmaps_org\":true,\"p\":[86.5,261.2,-75.2,-213.4],\"r\":\"A\"}");
+	  session = true;	 
+	  
+	  if (transport.startMessage!="")		  
+	     socket.sendText(transport.startMessage);
   }
   
   @Override
